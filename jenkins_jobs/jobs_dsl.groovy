@@ -44,107 +44,115 @@ def createPipelineView = {
         }
 }
 
+
+
 /**
  * The Build jobs
  */
+
 use(StepExtensions) {
-    def branch_name= "master"
-    def repository = "politrons/API_JENKINS"
-    def branchFolder = "branches/master"
+    [[branchName: "feature1"],
+     [branchName: "feature2" ],
+     [branchName: "feature3"]].each { env ->
 
-    folder("branches") {
-        description("Branches with build pipeline defined")
-    }
+        def branch_name= env.branchName
+        def repository = "politrons/API_JENKINS"
+        def branchFolder = "branches/$branch_name"
 
-    folder(branchFolder) {
-        description("Branch $branch_name")
-    }
-
-    /**
-     * performance/job
-     */
-    job("$branchFolder/performance") {
-
-        setupGithub(branch_name, repository)
-
-        steps {
-            gradleRun("clean build")
-        }
-    }
-
-    /**
-     * integration/job
-     */
-    job("$branchFolder/integration") {
-
-        setupGithub(branch_name, repository)
-
-        steps {
-            gradleRun("clean build")
-        }
-    }
-
-    /**
-     * sonar/job
-     */
-    job("$branchFolder/sonar") {
-
-        setupGithub(branch_name, repository)
-
-        steps {
-            gradleRun("clean build")
-        }
-    }
-
-    /**
-     * github_state/job
-     */
-    job("$branchFolder/github_state") {
-
-        steps {
-            gradleRun("clean build")
-        }
-    }
-
-    /**
-     * build/job
-     */
-    job("$branchFolder/build") {
-
-        setupGithub(branch_name, repository)
-
-        steps {
-            gradleRun("clean build")
+        folder("branches") {
+            description("Branches with build pipeline defined")
         }
 
-        publishers {
+        folder(branchFolder) {
+            description("Branch $branch_name")
+        }
 
-            downstreamParameterized {
-                trigger(["$branchFolder/performance", "$branchFolder/integration","$branchFolder/sonar"]) {
+        /**
+         * performance/job
+         */
+        job("$branchFolder/performance") {
 
+            setupGithub(branch_name, repository)
+
+            steps {
+                gradleRun("clean build")
+            }
+        }
+
+        /**
+         * integration/job
+         */
+        job("$branchFolder/integration") {
+
+            setupGithub(branch_name, repository)
+
+            steps {
+                gradleRun("clean build")
+            }
+        }
+
+        /**
+         * sonar/job
+         */
+        job("$branchFolder/sonar") {
+
+            setupGithub(branch_name, repository)
+
+            steps {
+                gradleRun("clean build")
+            }
+        }
+
+        /**
+         * github_state/job
+         */
+        job("$branchFolder/github_state") {
+
+            steps {
+                gradleRun("clean build")
+            }
+        }
+
+        /**
+         * build/job
+         */
+        job("$branchFolder/build") {
+
+            setupGithub(branch_name, repository)
+
+            steps {
+                gradleRun("clean build")
+            }
+
+            publishers {
+
+                downstreamParameterized {
+                    trigger(["$branchFolder/performance", "$branchFolder/integration","$branchFolder/sonar"]) {
+
+                    }
                 }
-            }
 
 
-            /*def nextJobName="$branchFolder/github_state"
-            if (is_master) {
-                  nextJobName = "deploy/price/price_dev"
-            } else {
-                  nextJobName = "$branchFolder/github_state"
-            }
+                /*def nextJobName="$branchFolder/github_state"
+                if (is_master) {
+                      nextJobName = "deploy/price/price_dev"
+                } else {
+                      nextJobName = "$branchFolder/github_state"
+                }
 
-            joinTrigger {
-                  publishers {
-                      downstreamParameterized {
-                          trigger(["$branchFolder/github_state"]) {
+                joinTrigger {
+                      publishers {
+                          downstreamParameterized {
+                              trigger(["$branchFolder/github_state"]) {
+                              }
                           }
                       }
-                  }
-            }*/
+                }*/
 
 
+            }
         }
-    }
 
-    createPipelineView("$branch_name")
+        createPipelineView("$branch_name")
+    }
 }

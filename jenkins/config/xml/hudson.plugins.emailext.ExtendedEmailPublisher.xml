@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.emailext.ExtendedEmailPublisherDescriptor plugin="email-ext@2.47">
+    <smtpAuthUsername>tesco.price.service@gmail.com</smtpAuthUsername>
+    <smtpAuthPassword>BwYOBaDlyEnUrokmuRlxMP1ym+KGNZmTPo22lYaxXIk=</smtpAuthPassword>
+    <smtpHost>smtp.gmail.com</smtpHost>
+    <useSsl>true</useSsl>
+    <smtpPort>465</smtpPort>
+    <charset>UTF-8</charset>
+    <defaultContentType>text/html</defaultContentType>
+    <defaultSubject>$BUILD_STATUS - $PROJECT_NAME (Build $BUILD_NUMBER)</defaultSubject>
+    <defaultBody>&lt;p&gt;Built git revision $GIT_REVISION&lt;/p&gt;&#xd;
+&lt;p&gt;Console output at $BUILD_URL&lt;/p&gt;&#xd;
+&lt;h2&gt;Changes in this version&lt;/h2&gt;&#xd;
+&lt;pre&gt;$CHANGES_SINCE_LAST_BUILD&lt;/pre&gt;&#xd;
+&lt;h2&gt;Test results&lt;/h2&gt;&#xd;
+&lt;pre&gt;$FAILED_TESTS&lt;/pre&gt;&#xd;
+&lt;h2&gt;Build log&lt;/h2&gt;&#xd;
+&lt;pre&gt;${BUILD_LOG, maxLines=100}&lt;/pre&gt;</defaultBody>
+    <defaultPresendScript></defaultPresendScript>
+    <defaultPostsendScript></defaultPostsendScript>
+    <defaultClasspath/>
+    <defaultTriggerIds>
+        <string>hudson.plugins.emailext.plugins.trigger.FailureTrigger</string>
+    </defaultTriggerIds>
+    <maxAttachmentSize>-1</maxAttachmentSize>
+    <recipientList></recipientList>
+    <defaultReplyTo></defaultReplyTo>
+    <excludedCommitters></excludedCommitters>
+    <overrideGlobalSettings>true</overrideGlobalSettings>
+    <precedenceBulk>false</precedenceBulk>
+    <debugMode>false</debugMode>
+    <requireAdminForTemplateTesting>false</requireAdminForTemplateTesting>
+    <enableWatching>false</enableWatching>
+</hudson.plugins.emailext.ExtendedEmailPublisherDescriptor>
