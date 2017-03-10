@@ -1,5 +1,6 @@
 import javaposse.jobdsl.dsl.Job
 import javaposse.jobdsl.dsl.helpers.step.StepContext
+import commons.*
 
 class StepExtensions {
     def static gradleRun(StepContext delegate, String task) {
@@ -50,7 +51,10 @@ def createPipelineView = {
  * The Build jobs
  */
 
-use(StepExtensions) {
+use(StepExtensions, DownloadJobs) {
+
+    getBrachesNames()
+
     [[branchName: "feature1"],
      [branchName: "feature2" ],
      [branchName: "feature3"]].each { env ->
