@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.codehaus.groovy.modules.http-builder:http-builder:0.7">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy.modules.http-builder/http-builder/0.7/ecc89fd507d10f1c9526bb9501e632408f71f239/http-builder-0.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy.modules.http-builder/http-builder/0.7/19e7d32913c37396b5a8986ce8ddcd31d89c5fc5/http-builder-0.7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

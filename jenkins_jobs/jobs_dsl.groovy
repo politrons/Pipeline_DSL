@@ -1,6 +1,6 @@
 import javaposse.jobdsl.dsl.Job
 import javaposse.jobdsl.dsl.helpers.step.StepContext
-import commons.*
+//import commons.*
 
 class StepExtensions {
     def static gradleRun(StepContext delegate, String task) {
