@@ -91,7 +91,7 @@ use(StepExtensions) {
             setupGithub(branch_name, repository)
 
             steps {
-                gradleRun("clean build")
+                gradleRun("clean verify")
             }
         }
 
