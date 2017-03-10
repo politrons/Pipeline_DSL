@@ -53,7 +53,7 @@ def createPipelineView = {
 
 use(StepExtensions, DownloadJobs) {
 
-    getBrachesNames()
+//    getBrachesNames()
 
     [[branchName: "feature1"],
      [branchName: "feature2" ],
