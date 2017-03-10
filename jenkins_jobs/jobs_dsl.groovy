@@ -39,7 +39,7 @@ def createPipelineView = {
             showPromotions()
             showTotalBuildTime()
             pipelines {
-                component('Api sdk compile and build', "branches/$branch_name/api_sdk_build")
+                component('Api sdk compile and build', "branches/$branch_name/build")
             }
         }
 }
@@ -85,9 +85,31 @@ use(StepExtensions) {
     }
 
     /**
+     * sonar/job
+     */
+    job("$branchFolder/sonar") {
+
+        setupGithub(branch_name, repository)
+
+        steps {
+            gradleRun("clean build")
+        }
+    }
+
+    /**
+     * github_state/job
+     */
+    job("$branchFolder/github_state") {
+
+        steps {
+            gradleRun("clean build")
+        }
+    }
+
+    /**
      * build/job
      */
-    job("$branchFolder/api_sdk_build") {
+    job("$branchFolder/build") {
 
         setupGithub(branch_name, repository)
 
@@ -98,14 +120,31 @@ use(StepExtensions) {
         publishers {
 
             downstreamParameterized {
-                trigger(["$branchFolder/performance", "$branchFolder/integration"]) {
+                trigger(["$branchFolder/performance", "$branchFolder/integration","$branchFolder/sonar"]) {
 
                 }
             }
+
+
+            /*def nextJobName="$branchFolder/github_state"
+            if (is_master) {
+                  nextJobName = "deploy/price/price_dev"
+            } else {
+                  nextJobName = "$branchFolder/github_state"
+            }
+
+            joinTrigger {
+                  publishers {
+                      downstreamParameterized {
+                          trigger(["$branchFolder/github_state"]) {
+                          }
+                      }
+                  }
+            }*/
+
 
         }
     }
 
     createPipelineView("$branch_name")
-
 }
