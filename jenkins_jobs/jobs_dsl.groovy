@@ -51,7 +51,7 @@ def createPipelineView = {
  * The Build jobs
  */
 
-use(StepExtensions, DownloadJobs) {
+use(StepExtensions) {
 
 //    getBrachesNames()
 
