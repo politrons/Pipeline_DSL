@@ -1,5 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<jenkins.model.JenkinsLocationConfiguration>
-  <adminAddress>Jenkins &lt;nobody@nowhere&gt;</adminAddress>
-  <jenkinsUrl>https://52.210.80.37/</jenkinsUrl>
-</jenkins.model.JenkinsLocationConfiguration>
