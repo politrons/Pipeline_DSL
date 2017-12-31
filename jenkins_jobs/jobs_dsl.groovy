@@ -49,7 +49,7 @@ def createPipelineView = {
             showPromotions()
             showTotalBuildTime()
             pipelines {
-                component('Api sdk compile and build', "$project_name/build")
+                component("Pipeline for project $project_name", "$project_name/build")
             }
         }
 }
