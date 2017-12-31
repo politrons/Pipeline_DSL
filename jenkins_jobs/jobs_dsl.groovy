@@ -74,6 +74,12 @@ use(StepExtensions) {
             cron("H */3 * * *")
         }
 
+        wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
+
         steps {
             shell("mvn clean install")
         }
@@ -92,6 +98,12 @@ use(StepExtensions) {
      */
     job("$projectName/integration") {
 
+        wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
+
         steps {
             shell("mvn install -P integration")
         }
@@ -109,6 +121,12 @@ use(StepExtensions) {
      * sonar/job
      */
     job("$projectName/sonar") {
+
+        wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
 
         steps {
             shell("""
@@ -133,6 +151,12 @@ use(StepExtensions) {
      */
     job("$projectName/performance") {
 
+        wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
+
         steps {
             shell("mvn install -P performance")
         }
@@ -150,6 +174,12 @@ use(StepExtensions) {
      * volume/job
      */
     job("$projectName/volume") {
+
+        wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
 
         steps {
             shell("mvn install -P volume")
