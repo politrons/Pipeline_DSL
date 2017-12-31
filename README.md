@@ -1,5 +1,7 @@
 # Project DSL
 
+![My image](img/butler.png)
+
 A Jenkins dsl to create a CI/CD pipeline for your projects.
 
 For this project we use the [Jenkins DSL](http://localhost:8080/plugin/job-dsl/api-viewer/index.html) which using groovy language.
