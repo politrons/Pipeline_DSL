@@ -2,8 +2,10 @@ import hudson.model.*
 import javaposse.jobdsl.dsl.Job
 
 import static StepExtensions.setupGithub
+
 def projectName = ""
 def repository = ""
+def sonarUri = ""
 
 println "###### Loading job parameters ######"
 binding.variables.each {
@@ -11,14 +13,18 @@ binding.variables.each {
         projectName = "${it.value}"
     }
 
-    if ("${it.key}" == "repository") {
+    if ("${it.key}" == "Git_repository") {
         repository = "${it.value}"
+    }
+
+    if ("${it.key}" == "Sonar_URI") {
+        sonarUri = "${it.value}"
     }
 }
 
 class StepExtensions {
 
-    def static setupGithub(Job delegate,String projectName, String repository) {
+    def static setupGithub(Job delegate, String projectName, String repository) {
         delegate.scm {
             git {
                 remote {
@@ -102,7 +108,7 @@ use(StepExtensions) {
     job("$projectName/sonar") {
 
         steps {
-            shell("sonar command")
+            shell(readFileFromWorkspace("scripts/sonar.sh $sonarUri $projectName"))
         }
 
         publishers {
