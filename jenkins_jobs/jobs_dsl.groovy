@@ -18,12 +18,12 @@ binding.variables.each {
 
 class StepExtensions {
 
-    def static setupGithub(Job delegate, String repository) {
+    def static setupGithub(Job delegate,String projectName, String repository) {
         delegate.scm {
             git {
                 remote {
-                    github(repository, "ssh", "github.com")
-                    credentials('github_user')
+                    url("git@$repository")
+                    credentials("git_user_$projectName")
                 }
             }
         }
@@ -63,7 +63,7 @@ use(StepExtensions) {
      */
     job("$projectName/build") {
 
-        setupGithub(repository)
+        setupGithub(projectName, repository)
 
         steps {
             shell("mvn clean install")
