@@ -70,6 +70,10 @@ use(StepExtensions) {
 
         setupGitRepository(projectName, repository)
 
+        triggers {
+            cron("H */3 * * *")
+        }
+
         steps {
             shell("mvn clean install")
         }
