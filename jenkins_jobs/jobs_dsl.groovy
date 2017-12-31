@@ -90,6 +90,10 @@ use(StepExtensions) {
         }
 
         publishers {
+            gitLabCommitStatusPublisher {
+                name('build')
+                markUnstableAsSuccess(false)
+            }
             mailer("$emailNotification", true, true)
             downstreamParameterized {
                 trigger(["$projectName/integration"]) {
@@ -115,6 +119,10 @@ use(StepExtensions) {
         }
 
         publishers {
+            gitLabCommitStatusPublisher {
+                name('integration')
+                markUnstableAsSuccess(false)
+            }
             mailer("$emailNotification", true, true)
             downstreamParameterized {
                 trigger(["$projectName/sonar"]) {
@@ -145,6 +153,10 @@ use(StepExtensions) {
         }
 
         publishers {
+            gitLabCommitStatusPublisher {
+                name('sonar')
+                markUnstableAsSuccess(false)
+            }
             mailer("$emailNotification", true, true)
             downstreamParameterized {
                 trigger(["$projectName/performance"]) {
@@ -170,6 +182,10 @@ use(StepExtensions) {
         }
 
         publishers {
+            gitLabCommitStatusPublisher {
+                name('performance')
+                markUnstableAsSuccess(false)
+            }
             mailer("$emailNotification", true, true)
             downstreamParameterized {
                 trigger(["$projectName/volume"]) {
@@ -195,6 +211,10 @@ use(StepExtensions) {
         }
 
         publishers {
+            gitLabCommitStatusPublisher {
+                name('volume')
+                markUnstableAsSuccess(false)
+            }
             mailer("$emailNotification", true, true)
         }
     }
