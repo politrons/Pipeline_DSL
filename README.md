@@ -1,4 +1,4 @@
-# Project DSL
+# Pipeline DSL
 
 ![My image](img/butler.png)![My image](img/logo-groovy.png)
 
