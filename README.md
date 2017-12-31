@@ -1,6 +1,7 @@
 # Project DSL
 
-![My image](img/butler.png)
+![My image](img/butler.png)![My image](img/logo-groovy.png)
+
 
 A Jenkins dsl to create a CI/CD pipeline for your projects.
 
