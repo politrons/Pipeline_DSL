@@ -3,9 +3,9 @@
 ![My image](img/butler.png)![My image](img/logo-groovy.png)
 
 
-A Jenkins dsl to create a CI/CD pipeline for your projects.
+A Jenkins DSL project to create CI/CD pipeline for your project.
 
-For this project we use the [Jenkins DSL](http://localhost:8080/plugin/job-dsl/api-viewer/index.html) which using groovy language.
+For this project we use the [Jenkins DSL](http://localhost:8080/plugin/job-dsl/api-viewer/index.html) which using [Groovy](http://groovy-lang.org/) language.
 
 The pipeline compose to the next jobs
 
