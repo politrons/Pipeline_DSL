@@ -6,6 +6,7 @@ import static StepExtensions.setupGitRepository
 def projectName = ""
 def repository = ""
 def sonarUri = ""
+def emailNotification=""
 
 println "###### Loading job parameters ######"
 binding.variables.each {
@@ -19,6 +20,10 @@ binding.variables.each {
 
     if ("${it.key}" == "Sonar_URI") {
         sonarUri = "${it.value}"
+    }
+
+    if ("${it.key}" == "Email_notification") {
+        emailNotification = "${it.value}"
     }
 }
 
@@ -85,6 +90,7 @@ use(StepExtensions) {
         }
 
         publishers {
+            mailer("$emailNotification", true, true)
             downstreamParameterized {
                 trigger(["$projectName/integration"]) {
 
@@ -109,6 +115,7 @@ use(StepExtensions) {
         }
 
         publishers {
+            mailer("$emailNotification", true, true)
             downstreamParameterized {
                 trigger(["$projectName/sonar"]) {
 
@@ -138,6 +145,7 @@ use(StepExtensions) {
         }
 
         publishers {
+            mailer("$emailNotification", true, true)
             downstreamParameterized {
                 trigger(["$projectName/performance"]) {
 
@@ -162,6 +170,7 @@ use(StepExtensions) {
         }
 
         publishers {
+            mailer("$emailNotification", true, true)
             downstreamParameterized {
                 trigger(["$projectName/volume"]) {
 
@@ -183,6 +192,10 @@ use(StepExtensions) {
 
         steps {
             shell("mvn install -P volume")
+        }
+
+        publishers {
+            mailer("$emailNotification", true, true)
         }
     }
 
