@@ -1,7 +1,7 @@
 import hudson.model.*
 import javaposse.jobdsl.dsl.Job
 
-import static StepExtensions.setupGithub
+import static StepExtensions.setupGitRepository
 
 def projectName = ""
 def repository = ""
@@ -24,7 +24,7 @@ binding.variables.each {
 
 class StepExtensions {
 
-    def static setupGithub(Job delegate, String projectName, String repository) {
+    def static setupGitRepository(Job delegate, String projectName, String repository) {
         delegate.scm {
             git {
                 remote {
@@ -69,7 +69,7 @@ use(StepExtensions) {
      */
     job("$projectName/build") {
 
-        setupGithub(projectName, repository)
+        setupGitRepository(projectName, repository)
 
         steps {
             shell("mvn clean install")
