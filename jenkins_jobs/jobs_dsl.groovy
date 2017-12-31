@@ -57,7 +57,6 @@ def createPipelineView = {
 /**
  * The Build jobs
  */
-
 use(StepExtensions) {
 
     folder(projectName) {
@@ -108,7 +107,12 @@ use(StepExtensions) {
     job("$projectName/sonar") {
 
         steps {
-            shell(readFileFromWorkspace("scripts/sonar.sh $sonarUri $projectName"))
+            shell("""
+                echo "Checking quality gate for sonar $sonarUri and project key $projectName"
+                mvn sonar:sonar
+                sleep 3m
+                curl "$sonarUri/api/qualitygates/project_status?projectKey=$projectName"
+               """)
         }
 
         publishers {
