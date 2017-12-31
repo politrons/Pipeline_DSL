@@ -1,5 +1,7 @@
 import javaposse.jobdsl.dsl.Job
 import javaposse.jobdsl.dsl.helpers.step.StepContext
+import static StepExtensions.*
+
 //import commons.*
 
 class StepExtensions {
@@ -57,7 +59,7 @@ use(StepExtensions) {
 
     [[branchName: "feature1"],
      [branchName: "feature2" ],
-     [branchName: "feature3"]].each { env ->
+     [branchName: "feature3"]].each { env ->7
 
         def branch_name= env.branchName
         def repository = "politrons/API_JENKINS"
@@ -72,14 +74,22 @@ use(StepExtensions) {
         }
 
         /**
-         * performance/job
+         * build/job
          */
-        job("$branchFolder/performance") {
+        job("$branchFolder/build") {
 
             setupGithub(branch_name, repository)
 
             steps {
                 gradleRun("clean build")
+            }
+
+            publishers {
+                downstreamParameterized {
+                    trigger(["$branchFolder/integration"]) {
+
+                    }
+                }
             }
         }
 
@@ -93,6 +103,14 @@ use(StepExtensions) {
             steps {
                 gradleRun("clean verify")
             }
+
+            publishers {
+                downstreamParameterized {
+                    trigger(["$branchFolder/sonar"]) {
+
+                    }
+                }
+            }
         }
 
         /**
@@ -105,22 +123,20 @@ use(StepExtensions) {
             steps {
                 gradleRun("clean build")
             }
-        }
 
-        /**
-         * github_state/job
-         */
-        job("$branchFolder/github_state") {
+            publishers {
+                downstreamParameterized {
+                    trigger(["$branchFolder/performance"]) {
 
-            steps {
-                gradleRun("clean build")
+                    }
+                }
             }
         }
 
         /**
-         * build/job
+         * performance/job
          */
-        job("$branchFolder/build") {
+        job("$branchFolder/performance") {
 
             setupGithub(branch_name, repository)
 
@@ -129,31 +145,24 @@ use(StepExtensions) {
             }
 
             publishers {
-
                 downstreamParameterized {
-                    trigger(["$branchFolder/performance", "$branchFolder/integration","$branchFolder/sonar"]) {
+                    trigger(["$branchFolder/volume"]) {
 
                     }
                 }
+            }
+        }
 
 
-                /*def nextJobName="$branchFolder/github_state"
-                if (is_master) {
-                      nextJobName = "deploy/price/price_dev"
-                } else {
-                      nextJobName = "$branchFolder/github_state"
-                }
+        /**
+         * volume/job
+         */
+        job("$branchFolder/volume") {
 
-                joinTrigger {
-                      publishers {
-                          downstreamParameterized {
-                              trigger(["$branchFolder/github_state"]) {
-                              }
-                          }
-                      }
-                }*/
+            setupGithub(branch_name, repository)
 
-
+            steps {
+                gradleRun("clean build")
             }
         }
 
