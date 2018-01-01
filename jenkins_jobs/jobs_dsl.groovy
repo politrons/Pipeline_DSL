@@ -45,26 +45,21 @@ class StepExtensions {
     }
 
     /**
-     * build/job
+     * Setup build job
      */
     def static setBuildJob(Job delegate, String projectName, String repository, String emailNotification) {
-
         setupGitRepository(delegate, projectName, repository)
-
         delegate.triggers {
             cron("H */3 * * *")
         }
-
         delegate.wrappers {
             timeout {
                 absolute(120)
             }
         }
-
         delegate.steps {
             shell("mvn clean install")
         }
-
         delegate.publishers {
             gitLabCommitStatusPublisher {
                 name('build')
@@ -82,16 +77,14 @@ class StepExtensions {
     }
 
     /**
-     * integration/job
+     * Setup integration job
      */
     def static setIntegrationJob(Job delegate, String projectName, String emailNotification) {
-
         delegate.wrappers {
             timeout {
                 absolute(120)
             }
         }
-
         delegate.steps {
             shell("""
                     cd ..
@@ -99,7 +92,6 @@ class StepExtensions {
                     "mvn install")
                 """)
         }
-
         delegate.publishers {
             gitLabCommitStatusPublisher {
                 name('integration')
@@ -115,8 +107,9 @@ class StepExtensions {
             }
         }
     }
+
     /**
-     * sonar/job
+     * Setup sonar job
      */
     def static setSonarJob(Job delegate, String projectName, String sonarUri, String emailNotification) {
         delegate.wrappers {
@@ -151,7 +144,7 @@ class StepExtensions {
     }
 
     /**
-     * performance/job
+     * Setup performance job
      */
     def static setPerformanceJob(Job delegate, String projectName, String emailNotification) {
         delegate.wrappers {
@@ -183,7 +176,7 @@ class StepExtensions {
     }
 
     /**
-     * volume/job
+     * Setup volume job
      */
     def static setVolumeJob(Job delegate, String emailNotification) {
         delegate.wrappers {
@@ -207,7 +200,6 @@ class StepExtensions {
         }
     }
 }
-
 
 def createPipelineView = {
     String project_name ->
