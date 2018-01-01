@@ -1,12 +1,16 @@
 import hudson.model.*
 import javaposse.jobdsl.dsl.Job
 
-import static StepExtensions.setupGitRepository
+import static StepExtensions.setBuildJob
+import static StepExtensions.setIntegrationJob
+import static StepExtensions.setSonarJob
+import static StepExtensions.setPerformanceJob
+import static StepExtensions.setVolumeJob
 
 def projectName = ""
 def repository = ""
 def sonarUri = ""
-def emailNotification=""
+def emailNotification = ""
 
 println "###### Loading job parameters ######"
 binding.variables.each {
@@ -39,7 +43,171 @@ class StepExtensions {
             }
         }
     }
+
+    /**
+     * build/job
+     */
+    def static setBuildJob(Job delegate, String projectName, String repository, String emailNotification) {
+
+        setupGitRepository(delegate, projectName, repository)
+
+        delegate.triggers {
+            cron("H */3 * * *")
+        }
+
+        delegate.wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
+
+        delegate.steps {
+            shell("mvn clean install")
+        }
+
+        delegate.publishers {
+            gitLabCommitStatusPublisher {
+                name('build')
+                markUnstableAsSuccess(false)
+            }
+            mailer("$emailNotification", true, true)
+            downstreamParameterized {
+                trigger("$projectName/integration") {
+                    parameters {
+                        predefinedProp('VERSION', '1.0.0')
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * integration/job
+     */
+    def static setIntegrationJob(Job delegate, String projectName, String emailNotification) {
+
+        delegate.wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
+
+        delegate.steps {
+            shell("""
+                    cd ..
+                    cd build
+                    "mvn install")
+                """)
+        }
+
+        delegate.publishers {
+            gitLabCommitStatusPublisher {
+                name('integration')
+                markUnstableAsSuccess(false)
+            }
+            mailer("$emailNotification", true, true)
+            downstreamParameterized {
+                trigger(["$projectName/sonar"]) {
+                    parameters {
+                        predefinedProp('VERSION', '1.0.0')
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * sonar/job
+     */
+    def static setSonarJob(Job delegate, String projectName, String sonarUri, String emailNotification) {
+        delegate.wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
+        delegate.steps {
+            shell("""
+                cd ..
+                cd build
+                echo "Checking quality gate for sonar $sonarUri and project key $projectName"
+                mvn sonar:sonar
+                #sleep 3m
+                #curl "$sonarUri/api/qualitygates/project_status?projectKey=$projectName"
+               """)
+        }
+        delegate.publishers {
+            gitLabCommitStatusPublisher {
+                name('sonar')
+                markUnstableAsSuccess(false)
+            }
+            mailer("$emailNotification", true, true)
+            downstreamParameterized {
+                trigger(["$projectName/performance"]) {
+                    parameters {
+                        predefinedProp('VERSION', '1.0.0')
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * performance/job
+     */
+    def static setPerformanceJob(Job delegate, String projectName, String emailNotification) {
+        delegate.wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
+        delegate.steps {
+            shell("""
+                    cd ..
+                    cd build
+                    "mvn install")
+                """)
+        }
+        delegate.publishers {
+            gitLabCommitStatusPublisher {
+                name('performance')
+                markUnstableAsSuccess(false)
+            }
+            mailer("$emailNotification", true, true)
+            downstreamParameterized {
+                trigger(["$projectName/volume"]) {
+                    parameters {
+                        predefinedProp('VERSION', '1.0.0')
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * volume/job
+     */
+    def static setVolumeJob(Job delegate, String emailNotification) {
+        delegate.wrappers {
+            timeout {
+                absolute(120)
+            }
+        }
+        delegate.steps {
+            shell("""
+                    cd ..
+                    cd build
+                    "mvn install")
+                """)
+        }
+        delegate.publishers {
+            gitLabCommitStatusPublisher {
+                name('volume')
+                markUnstableAsSuccess(false)
+            }
+            mailer("$emailNotification", true, true)
+        }
+    }
 }
+
 
 def createPipelineView = {
     String project_name ->
@@ -60,163 +228,27 @@ def createPipelineView = {
 }
 
 /**
- * The Build jobs
+ * The Pipeline jobs
  */
 use(StepExtensions) {
 
     folder(projectName) {
         description("Project $projectName")
     }
-
-    /**
-     * build/job
-     */
     job("$projectName/build") {
-
-        setupGitRepository(projectName, repository)
-
-        triggers {
-            cron("H */3 * * *")
-        }
-
-        wrappers {
-            timeout {
-                absolute(120)
-            }
-        }
-
-        steps {
-            shell("mvn clean install")
-        }
-
-        publishers {
-            gitLabCommitStatusPublisher {
-                name('build')
-                markUnstableAsSuccess(false)
-            }
-            mailer("$emailNotification", true, true)
-            downstreamParameterized {
-                trigger(["$projectName/integration"]) {
-
-                }
-            }
-        }
+        setBuildJob(projectName, repository, emailNotification)
     }
-
-    /**
-     * integration/job
-     */
     job("$projectName/integration") {
-
-        wrappers {
-            timeout {
-                absolute(120)
-            }
-        }
-
-        steps {
-            shell("mvn install -P integration")
-        }
-
-        publishers {
-            gitLabCommitStatusPublisher {
-                name('integration')
-                markUnstableAsSuccess(false)
-            }
-            mailer("$emailNotification", true, true)
-            downstreamParameterized {
-                trigger(["$projectName/sonar"]) {
-
-                }
-            }
-        }
+        setIntegrationJob(projectName, emailNotification)
     }
-
-    /**
-     * sonar/job
-     */
     job("$projectName/sonar") {
-
-        wrappers {
-            timeout {
-                absolute(120)
-            }
-        }
-
-        steps {
-            shell("""
-                echo "Checking quality gate for sonar $sonarUri and project key $projectName"
-                mvn sonar:sonar
-                sleep 3m
-                curl "$sonarUri/api/qualitygates/project_status?projectKey=$projectName"
-               """)
-        }
-
-        publishers {
-            gitLabCommitStatusPublisher {
-                name('sonar')
-                markUnstableAsSuccess(false)
-            }
-            mailer("$emailNotification", true, true)
-            downstreamParameterized {
-                trigger(["$projectName/performance"]) {
-
-                }
-            }
-        }
+        setSonarJob(projectName, sonarUri, emailNotification)
     }
-
-    /**
-     * performance/job
-     */
     job("$projectName/performance") {
-
-        wrappers {
-            timeout {
-                absolute(120)
-            }
-        }
-
-        steps {
-            shell("mvn install -P performance")
-        }
-
-        publishers {
-            gitLabCommitStatusPublisher {
-                name('performance')
-                markUnstableAsSuccess(false)
-            }
-            mailer("$emailNotification", true, true)
-            downstreamParameterized {
-                trigger(["$projectName/volume"]) {
-
-                }
-            }
-        }
+        setPerformanceJob(projectName, emailNotification)
     }
-
-    /**
-     * volume/job
-     */
     job("$projectName/volume") {
-
-        wrappers {
-            timeout {
-                absolute(120)
-            }
-        }
-
-        steps {
-            shell("mvn install -P volume")
-        }
-
-        publishers {
-            gitLabCommitStatusPublisher {
-                name('volume')
-                markUnstableAsSuccess(false)
-            }
-            mailer("$emailNotification", true, true)
-        }
+        setVolumeJob(emailNotification)
     }
 
     createPipelineView("$projectName")
